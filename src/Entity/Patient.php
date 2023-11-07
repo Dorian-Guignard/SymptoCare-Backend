@@ -60,9 +60,9 @@ class Patient
     private $pathology;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Treatment::class, inversedBy="patients")
+     * @ORM\ManyToMany(targetEntity=Treatment::class, mappedBy="patients")
      */
-    private $treatment;
+    private $treatments;
 
     /**
      * @ORM\OneToMany(targetEntity=Antecedent::class, mappedBy="patient")
@@ -83,7 +83,7 @@ class Patient
     {
         $this->constants = new ArrayCollection();
         $this->symptom = new ArrayCollection();
-        $this->treatment = new ArrayCollection();
+        $this->treatments = new ArrayCollection();
         $this->antecedent = new ArrayCollection();
         $this->doctor = new ArrayCollection();
         $this->clinic = new ArrayCollection();
@@ -223,15 +223,10 @@ class Patient
     /**
      * @return Collection<int, Treatment>
      */
-    public function getTreatment(): Collection
-    {
-        return $this->treatment;
-    }
-
     public function addTreatment(Treatment $treatment): self
     {
-        if (!$this->treatment->contains($treatment)) {
-            $this->treatment[] = $treatment;
+        if (!$this->treatments->contains($treatment)) {
+            $this->treatments[] = $treatment;
         }
 
         return $this;
@@ -239,7 +234,7 @@ class Patient
 
     public function removeTreatment(Treatment $treatment): self
     {
-        $this->treatment->removeElement($treatment);
+        $this->treatments->removeElement($treatment);
 
         return $this;
     }

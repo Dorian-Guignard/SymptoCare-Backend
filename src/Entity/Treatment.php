@@ -35,7 +35,7 @@ class Treatment
     private $unit;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Patient::class, mappedBy="Treatment")
+     * @ORM\ManyToMany(targetEntity=Patient::class, inversedBy="treatments")
      */
     private $patients;
 
