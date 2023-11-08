@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ConstantRepository;
 use Doctrine\ORM\Mapping as ORM;
+
 
 /**
  * @ORM\Entity(repositoryClass=ConstantRepository::class)
@@ -14,26 +16,31 @@ class Constant
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("patients_get_collection")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=0, nullable=true)
+     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
+     * @Groups("patients_get_collection")
      */
     private $value;
 
     /**
      * @ORM\Column(type="date")
+     * @Groups("patients_get_collection")
      */
     private $date;
 
     /**
      * @ORM\Column(type="time")
+     * @Groups("patients_get_collection")
      */
     private $time;
 
     /**
      * @ORM\ManyToOne(targetEntity=ConstantType::class, inversedBy="constants")
+     * @Groups("patients_get_collection")
      */
     private $constantType;
 

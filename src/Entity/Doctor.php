@@ -6,6 +6,7 @@ use App\Repository\DoctorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=DoctorRepository::class)
@@ -16,36 +17,43 @@ class Doctor
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("patients_get_collection")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("patients_get_collection")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("patients_get_collection")
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Groups("patients_get_collection")
      */
     private $speciality;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("patients_get_collection")
      */
     private $address;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
+     * @Groups("patients_get_collection")
      */
     private $phone_number;
 
     /**
      * @ORM\ManyToMany(targetEntity=Patient::class, mappedBy="doctor")
+     * @ORM\JoinColumn(name="patient_id", referencedColumnName="id")
      */
     private $patients;
 

@@ -6,6 +6,7 @@ use App\Repository\SymptomRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=SymptomRepository::class)
@@ -16,32 +17,40 @@ class Symptom
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("patients_get_collection")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("patients_get_collection")
      */
     private $name;
 
     /**
      * @ORM\Column(type="date")
+     * @Groups("patients_get_collection")
      */
     private $date;
 
     /**
      * @ORM\Column(type="time")
+     * @Groups("patients_get_collection")
      */
     private $time;
 
     /**
      * @ORM\ManyToMany(targetEntity=Patient::class, mappedBy="symptom")
+     * @ORM\JoinColumn(name="patient_id", referencedColumnName="id")
      */
     private $patients;
+
+
 
     public function __construct()
     {
         $this->patients = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -111,4 +120,6 @@ class Symptom
 
         return $this;
     }
+
+
 }

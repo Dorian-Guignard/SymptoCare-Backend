@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AntecedentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=AntecedentRepository::class)
@@ -14,28 +15,34 @@ class Antecedent
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("patients_get_collection")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("patients_get_collection")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("patients_get_collection")
      */
     private $description;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups("patients_get_collection")
      */
     private $year;
 
     /**
      * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="antecedent")
+     * @ORM\JoinColumn(name="patient_id", referencedColumnName="id")
      */
     private $patient;
+
 
     public function getId(): ?int
     {
@@ -89,4 +96,5 @@ class Antecedent
 
         return $this;
     }
+
 }
