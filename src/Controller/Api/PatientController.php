@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Patient;
 use App\Repository\PatientRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,9 @@ class PatientController extends AbstractController
     public function list(PatientRepository $patientRepository): JsonResponse
     {
         $patients = $patientRepository->findAll();
-        
+        if ($patients === null) {
+            return $this->json(['message' => 'patient non trouvés.'], Response::HTTP_NOT_FOUND);
+        }
 
         return $this->json(
             ['patients' => $patients],
@@ -33,11 +36,22 @@ class PatientController extends AbstractController
 
 
     /**
-     * @Route("/{id}", name="show", methods={"GET"})
+     * @Route("/{id<\d+>}", name="show", methods={"GET"})
      */
-    public function show(int $id)
+    public function show(Patient $patient, PatientRepository $patientRepository)
     {
-        // Code pour afficher un patient spécifique par son ID
+        $id = $patient->getId();
+        $patients = $patientRepository->find($id);
+        if ($patients === null) {
+            return $this->json(['message' => 'patient non trouvés.'], Response::HTTP_NOT_FOUND);
+        }
+        return $this->json(
+            ['patients' => $patients],
+            Response::HTTP_OK,
+            [],
+            ['groups' => 'patients_get_collection']
+        );
+
     }
 
     /**
