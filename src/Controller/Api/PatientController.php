@@ -2,11 +2,7 @@
 
 namespace App\Controller\Api;
 
-use Doctrine\ORM\EntityManager;
 use App\Repository\PatientRepository;
-use App\Repository\AntecedentRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,7 +18,7 @@ class PatientController extends AbstractController
     /**
      * @Route("/", name="list", methods={"GET"})
      */
-    public function list(PatientRepository $patientRepository, AntecedentRepository $antecedentRepository): JsonResponse
+    public function list(PatientRepository $patientRepository): JsonResponse
     {
         $patients = $patientRepository->findAll();
         
