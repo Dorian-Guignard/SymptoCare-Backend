@@ -8,7 +8,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 
 /**
  * @Route("/api/patients", name="api_patient_")
@@ -38,7 +42,7 @@ class PatientController extends AbstractController
     /**
      * @Route("/{id<\d+>}", name="show", methods={"GET"})
      */
-    public function show(Patient $patient, PatientRepository $patientRepository)
+    public function show(Patient $patient, PatientRepository $patientRepository): JsonResponse
     {
         $id = $patient->getId();
         $patients = $patientRepository->find($id);
@@ -57,10 +61,25 @@ class PatientController extends AbstractController
     /**
      * @Route("/", name="create", methods={"POST"})
      */
-    public function create(Request $request)
+    public function create(Request $request,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator)
     {
-        // Code pour créer un nouveau patient en fonction des données de la requête
+        $jsonContent = $request->getContent();
+
+        $patient = $serializer->deserialize(
+            $jsonContent,
+            Patient::class,
+            "json",
+            [AbstractNormalizer::IGNORED_ATTRIBUTES =>
+            ['category', 'virtue', 'treatment'], AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,]
+        );
+
+
     }
+
+
+
 
     /**
      * @Route("/{id}", name="update", methods={"PUT"})
