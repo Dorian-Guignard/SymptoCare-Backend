@@ -58,26 +58,64 @@ class PatientController extends AbstractController
 
     }
 
-    /**
-     * @Route("/", name="create", methods={"POST"})
-     */
-    public function create(Request $request,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator)
-    {
-        $jsonContent = $request->getContent();
+    
+/**
+ * @Route("/patient/{id}/constantes", name="patient_constantes_creer", methods={"POST"})
+ */
+public function creerConstante(Request $request, $id, EntityManagerInterface $entityManager): Response
+{
+    $patient = $this->getDoctrine()->getRepository(Patient::class)->find($id);
+{
+    $jsonContent = $request->getContent();
+    $requestData = json_decode($jsonContent, true);
 
-        $patient = $serializer->deserialize(
-            $jsonContent,
-            Patient::class,
-            "json",
-            [AbstractNormalizer::IGNORED_ATTRIBUTES =>
-            ['category', 'virtue', 'treatment'], AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,]
-        );
-
-
+    // Vérifiez si les données nécessaires sont présentes et ont les types attendus
+    if (
+        !isset($requestData['value'], $requestData['date'], $requestData['time'], $requestData['constantType']) ||
+        !is_numeric($requestData['value']) ||
+        !DateTime::createFromFormat('Y-m-d', $requestData['date']) ||
+        !DateTime::createFromFormat('H:i:s', $requestData['time'])
+    ) {
+        return $this->json(['error' => 'Données invalides ou manquantes'], Response::HTTP_BAD_REQUEST);
     }
 
+    // Supposons que l'utilisateur connecté est un patient
+    $patient = $this->getUser();
+
+    try {
+        $entityManager->beginTransaction();
+
+        $constant = new Constant();
+        $constant->setValue($requestData['value']);
+        $constant->setDate(new \DateTime($requestData['date']));
+        $constant->setTime(new \DateTime($requestData['time']));
+
+        // Vérifiez si le type de constante existe dans la base de données
+        $constantTypeId = $requestData['constantType'];
+        $constantType = $entityManager->getRepository(ConstantType::class)->find($constantTypeId);
+
+        if (!$constantType) {
+            return $this->json(['error' => 'Type de constante invalide'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $constant->setConstantType($constantType);
+        $constant->setPatient($patient);
+
+        // Enregistrez la constante dans la base de données
+        $entityManager->persist($constant);
+        $entityManager->flush();
+
+        $entityManager->commit();
+
+        return $this->json(['message' => 'Constante ajoutée avec succès'], Response::HTTP_CREATED);
+    } catch (\Exception $e) {
+        // En cas d'échec, annulez la transaction
+        $entityManager->rollback();
+
+        // Loggez l'exception ou renvoyez une réponse d'erreur appropriée
+        return $this->json(['error' => 'Une erreur est survenue'], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
 
 
 
