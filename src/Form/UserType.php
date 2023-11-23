@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Entity\Patient;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class UserType extends AbstractType
 {
@@ -13,9 +15,11 @@ class UserType extends AbstractType
     {
         $builder
             ->add('email')
-            ->add('roles')
-            ->add('password')
-            ->add('patient')
+            
+            ->add('password', PasswordType::class)
+            //->add('patient', Patient::class, [
+            //  'required' => false, // Si vous voulez que ce champ ne soit pas obligatoire
+            //  ])
         ;
     }
 

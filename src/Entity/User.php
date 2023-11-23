@@ -7,6 +7,7 @@ use App\Repository\UserRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Entity\Patient;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -39,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
-     * @ORM\OneToOne(targetEntity=Patient::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
      */
     private $patient;
 

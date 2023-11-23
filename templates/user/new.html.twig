@@ -5,7 +5,21 @@
 {% block body %}
     <h1>Create new User</h1>
 
-    {{ include('user/_form.html.twig') }}
+    {{ form_start(form, {'attr': {'id': 'new_edit_user'}}) }}
+        {# Utilisation de classes bootstrap pour la mise en forme #}
+        <div class="row">
+            <div class="col-12">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email) }}
+            </div>
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+            <div class="col-12">
+                {{ form_label(form.password) }}
+                {{ form_widget(form.password) }}
+            </div>
+        </div>
+        <button class="btn btn-success">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_user_index') }}">Back to list</a>
 {% endblock %}

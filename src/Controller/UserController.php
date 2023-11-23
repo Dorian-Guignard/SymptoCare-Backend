@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Entity\Patient;
+use Doctrine\ORM\EntityManager;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Encoder\PasswordHasherInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -31,7 +33,7 @@ class UserController extends AbstractController
     /**
      * @Route("/new", name="app_user_new", methods={"GET", "POST"})
      */
-    public function new(UserPasswordHasherInterface $passwordHasher, Request $request, UserRepository $userRepository): Response
+    public function new(EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher, Request $request, UserRepository $userRepository): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -42,10 +44,11 @@ class UserController extends AbstractController
             $hashedPassword = $passwordHasher->hashPassword(
                 $user               
             );
+            $patient = new Patient();
+            $patient->setUser($user); // Assurez-vous d'avoir une méthode setUser dans l'entité Patient
+            $entityManager->persist($patient);
 
-            $user->setPassword($hashedPassword);
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            $user->setPassword($hashedPassword);     
         }
 
         return $this->renderForm('user/new.html.twig', [
