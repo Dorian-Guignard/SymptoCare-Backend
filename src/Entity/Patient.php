@@ -59,6 +59,7 @@ class Patient
     private $date_birth;
 
     /**
+     * @var string The hashed password
      * @ORM\Column(type="string", length=255)
      * @Groups("patients_get_collection")
      */
