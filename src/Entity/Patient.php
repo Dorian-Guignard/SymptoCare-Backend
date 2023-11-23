@@ -46,11 +46,6 @@ class Patient
      */
     private $email;
 
-    /**
-     * @ORM\Column(type="json")
-     * @Groups({"patients_get_collection", "users_get_item"})
-     */
-    private $roles = [];
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -58,12 +53,6 @@ class Patient
      */
     private $date_birth;
 
-    /**
-     * @var string The hashed password
-     * @ORM\Column(type="string", length=255)
-     * @Groups("patients_get_collection")
-     */
-    private $password;
 
     /**
      * @ORM\OneToMany(targetEntity=Constant::class, mappedBy="patient")
@@ -167,25 +156,6 @@ class Patient
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
-    }
 
     public function getDateBirth(): ?string
     {
@@ -199,17 +169,6 @@ class Patient
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Constant>
