@@ -4,12 +4,19 @@ namespace App\Entity;
 
 use App\Repository\PatientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PatientRepository::class)
+ * @UniqueEntity(fields={"email"}, message="Il existe déja un compte avec cet email")
+ * 
  */
 class Patient
 {
@@ -34,10 +41,16 @@ class Patient
     private $firstname;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=180, unique=true)
      * @Groups("patients_get_collection")
      */
     private $email;
+
+    /**
+     * @ORM\Column(type="json")
+     * @Groups({"patients_get_collection", "users_get_item"})
+     */
+    private $roles = [];
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -149,6 +162,26 @@ class Patient
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }
