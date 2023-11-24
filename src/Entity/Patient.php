@@ -103,7 +103,8 @@ class Patient
     private $patientPathologies;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient")
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
 
@@ -117,7 +118,6 @@ class Patient
         $this->doctor = new ArrayCollection();
         $this->clinic = new ArrayCollection();
         $this->patientPathologies = new ArrayCollection();
-        
     }
 
     public function getId(): ?int
@@ -380,7 +380,7 @@ class Patient
 
     /**
      * Get the value of user
-     */ 
+     */
     public function getUser()
     {
         return $this->user;
@@ -390,7 +390,7 @@ class Patient
      * Set the value of user
      *
      * @return  self
-     */ 
+     */
     public function setUser($user)
     {
         $this->user = $user;

@@ -20,6 +20,15 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  */
 class UserController extends AbstractController
 {
+
+    private $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
+
     /**
      * @Route("/", name="app_user_index", methods={"GET"})
      */
@@ -41,8 +50,9 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $userRepository->add($user, true);
-            $hashedPassword = $passwordHasher->hashPassword(
-                $user               
+            $hashedPassword = $this->passwordHasher->hashPassword(
+                $user,
+                $user->getPassword()
             );
             $patient = new Patient();
             $patient->setUser($user); // Assurez-vous d'avoir une méthode setUser dans l'entité Patient
