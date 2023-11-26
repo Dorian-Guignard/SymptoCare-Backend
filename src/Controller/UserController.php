@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * @Route("/user")
@@ -21,7 +22,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserController extends AbstractController
 {
 
+    private $tokenStorage;
 
+    public function __construct(TokenStorageInterface $tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
 
 
     /**
@@ -34,6 +40,33 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/{id}", name="app_user_show", methods={"GET"})
+     */
+    public function show(User $user): Response
+    {
+        if ($user === null) {
+
+            return $this->json(['message' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json(
+
+            ['user' => $user],
+
+            Response::HTTP_OK,
+
+            [],
+
+            ['groups' => 'patients_get_collection']
+        );
+    }
+
+    /**
+     * Create user
+     * 
+     * @Route("/api/users", name="app_api_post_users_item", methods={"POST"})
+     */
     public function new(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, Request $request, UserRepository $userRepository): Response
     {
         $user = new User();
@@ -76,16 +109,6 @@ class UserController extends AbstractController
 
 
     /**
-     * @Route("/{id}", name="app_user_show", methods={"GET"})
-     */
-    public function show(User $user): Response
-    {
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
-        ]);
-    }
-
-    /**
      * @Route("/{id}/edit", name="app_user_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, User $user, UserRepository $userRepository): Response
@@ -120,5 +143,33 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     *@Route("/api/usersconnect", name="app_api__usersconnect_item", methods={"GET"}) 
+     */
+    public function getCurrentUser()
+    {
+        $token = $this->tokenStorage->getToken();
+
+        if (!$token) {
+            return $this->json(['message' => 'token non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $token->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(['message' => 'user non trouvé.'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json(
+            ['user' => $user],
+
+            Response::HTTP_OK,
+
+            [],
+
+            ['groups' => 'patients_get_collection']
+        );
     }
 }

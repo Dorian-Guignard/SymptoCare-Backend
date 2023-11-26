@@ -13,8 +13,8 @@ use App\Service\TokenGenerator;
 class SecurityController extends AbstractController
 {
 
-      
-     /**
+
+    /**
      * @Route("/api/login", name="api_login")
      */
      public function index(CurrentUser $curentUser, User $user, TokenGenerator $tokenGenerator): Response

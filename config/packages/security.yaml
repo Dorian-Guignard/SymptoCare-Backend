@@ -36,7 +36,7 @@ security:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
             json_login:
-                check_path: /api/login
+                check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         # firewall pour les routes de l'API (JWT sera actif sur ces routes)
