@@ -21,12 +21,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserController extends AbstractController
 {
 
-    private $passwordHasher;
 
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
-    {
-        $this->passwordHasher = $passwordHasher;
-    }
 
 
     /**
@@ -39,26 +34,38 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/new", name="app_user_new", methods={"GET", "POST"})
-     */
-    public function new(EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher, Request $request, UserRepository $userRepository): Response
+    public function new(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, Request $request, UserRepository $userRepository): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $userRepository->add($user, true);
-            $hashedPassword = $this->passwordHasher->hashPassword(
+            // Hasher le mot de passe
+            $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $user->getPassword()
             );
-            $patient = new Patient();
-            $patient->setUser($user); // Assurez-vous d'avoir une méthode setUser dans l'entité Patient
-            $entityManager->persist($patient);
 
-            $user->setPassword($hashedPassword);     
+            $user->setPassword($hashedPassword);
+
+            // Persister et flusher l'entité User
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            // Créer l'entité Patient et la lier à l'entité User
+            $patient = new Patient();
+            $patient->setUser($user);
+            $patient->setName($user->getEmail()); // Utilisez le nom de l'utilisateur comme exemple, ajustez selon vos besoins
+            $patient->setFirstname('blabla'); // Ajoutez d'autres propriétés si nécessaire
+            $patient->setEmail($user->getEmail());
+            // Définissez d'autres propriétés si nécessaire
+
+            // Persister et flusher l'entité Patient
+            $entityManager->persist($patient);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_user_index');
         }
 
         return $this->renderForm('user/new.html.twig', [
@@ -66,6 +73,7 @@ class UserController extends AbstractController
             'form' => $form,
         ]);
     }
+
 
     /**
      * @Route("/{id}", name="app_user_show", methods={"GET"})
