@@ -10,3 +10,4 @@ app_logout:
 # @see https://github.com/lexik/LexikJWTAuthenticationBundle/blob/2.x/Resources/doc/index.rst#configure-application-routing
 api_login_check:
     path: /api/login_check
+

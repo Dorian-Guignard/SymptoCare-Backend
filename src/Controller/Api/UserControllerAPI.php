@@ -19,9 +19,9 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * @Route("/crud")
+ * @Route("/api/user")
  */
-class UserController extends AbstractController
+class UserControllerAPI extends AbstractController
 {
 
     private $tokenStorage;
@@ -33,7 +33,7 @@ class UserController extends AbstractController
 
 
     /**
-     * @Route("/", name="app_user_index", methods={"GET"})
+     * @Route("/", name="api_app_user_index", methods={"GET"})
      */
     public function index(UserRepository $userRepository): Response
     {
@@ -43,7 +43,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="app_user_show", methods={"GET"})
+     * @Route("/{id}", name="api_app_user_show", methods={"GET"})
      */
     public function show(User $user): Response
     {
@@ -67,7 +67,7 @@ class UserController extends AbstractController
     /**
      * Create user
      * 
-     * @Route("/users/create", name="app_user_new", methods={"GET", "POST"})
+     * @Route("/create", name="api_app_user_new", methods={"POST"})
      */
     public function new(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, Request $request, UserRepository $userRepository): Response
     {
@@ -91,11 +91,10 @@ class UserController extends AbstractController
             // Créer l'entité Patient et la lier à l'entité User
             $patient = new Patient();
             $patient->setUser($user);
-            $patient->setName($user->getEmail()); 
-            $patient->setFirstname('blabla'); 
+            $patient->setName($user->getEmail()); // Utilisez le nom de l'utilisateur comme exemple, ajustez selon vos besoins
+            $patient->setFirstname('blabla'); // Ajoutez d'autres propriétés si nécessaire
             $patient->setEmail($user->getEmail());
-            $patient->setDateBirth($user->getPatient());
-            
+            // Définissez d'autres propriétés si nécessaire
 
             // Persister et flusher l'entité Patient
             $entityManager->persist($patient);
@@ -112,7 +111,7 @@ class UserController extends AbstractController
 
 
     /**
-     * @Route("/{id}/edit", name="app_user_edit", methods={"GET", "POST"})
+     * @Route("/{id}/edit", name="api_app_user_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, UserPasswordHasherInterface $passwordHasher, User $user, UserRepository $userRepository): Response
     {
@@ -138,17 +137,15 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="app_user_delete", methods={"POST"})
+     * @Route("/{id}", name="api_app_user_delete", methods={"POST"})
      */
     public function delete(UserPasswordHasherInterface $passwordHasher, Request $request, User $user, UserRepository $userRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
             if (!$passwordHasher->isPasswordValid($user)) {
                 throw new AccessDeniedHttpException();
                 $userRepository->remove($user, true);
             }
-            
-
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
@@ -163,7 +160,7 @@ class UserController extends AbstractController
         $user = $security->getUser();
 
         if ($user) {
-        $token = $jwtManager->create($user);
+            $token = $jwtManager->create($user);
         }
 
         if (!$token) {
@@ -177,8 +174,10 @@ class UserController extends AbstractController
         }
 
         return $this->json(
-            ['user' => $user,
-            'token' => $token],
+            [
+                'user' => $user,
+                'token' => $token
+            ],
             Response::HTTP_OK,
             [],
             ['groups' => 'patients_get_collection']
