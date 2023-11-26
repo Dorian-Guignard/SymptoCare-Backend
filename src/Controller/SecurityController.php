@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Entity\User;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use App\Service\TokenGenerator;
 
 class SecurityController extends AbstractController
 {
@@ -16,7 +17,7 @@ class SecurityController extends AbstractController
      /**
      * @Route("/api/login", name="api_login")
      */
-     public function index(CurrentUser $curentUser, User $user): Response
+     public function index(CurrentUser $curentUser, User $user, TokenGenerator $tokenGenerator): Response
       {
          if (null === $user) {
              return $this->json([
@@ -24,7 +25,8 @@ class SecurityController extends AbstractController
              ], Response::HTTP_UNAUTHORIZED);
          }
 
-        $token = ...; // somehow create an API token for $user
+        $token =
+        $tokenGenerator->generateToken($user); 
 
           return $this->json([
 
