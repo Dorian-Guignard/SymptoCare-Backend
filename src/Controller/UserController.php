@@ -92,9 +92,9 @@ class UserController extends AbstractController
             $patient = new Patient();
             $patient->setUser($user);
             $patient->setName($user->getEmail()); 
-            $patient->setFirstname('blabla'); 
-
-            $patient->setDateBirth($user->getPatient());
+            $patient->setFirstname('blabla');
+            $patient->setDateBirth('blabla');
+            
             
 
             // Persister et flusher l'entité Patient

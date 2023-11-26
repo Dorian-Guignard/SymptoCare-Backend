@@ -93,7 +93,7 @@ class UserControllerAPI extends AbstractController
             $patient->setUser($user);
             $patient->setName($user->getEmail()); // Utilisez le nom de l'utilisateur comme exemple, ajustez selon vos besoins
             $patient->setFirstname('blabla'); // Ajoutez d'autres propriétés si nécessaire
-            $patient->setEmail($user->getEmail());
+            
             // Définissez d'autres propriétés si nécessaire
 
             // Persister et flusher l'entité Patient
