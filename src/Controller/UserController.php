@@ -93,7 +93,7 @@ class UserController extends AbstractController
             $patient->setUser($user);
             $patient->setName($user->getEmail()); 
             $patient->setFirstname('blabla'); 
-            $patient->setEmail($user->getEmail());
+
             $patient->setDateBirth($user->getPatient());
             
 
