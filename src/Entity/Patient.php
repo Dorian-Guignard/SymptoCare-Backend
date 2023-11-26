@@ -41,18 +41,10 @@ class Patient
     private $firstname;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups("patients_get_collection")
-     */
-    private $email;
-
-
-    /**
      * @ORM\Column(type="string", length=255)
      * @Groups("patients_get_collection")
      */
     private $date_birth;
-
 
     /**
      * @ORM\OneToMany(targetEntity=Constant::class, mappedBy="patient")
@@ -145,18 +137,6 @@ class Patient
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
 
         return $this;
     }
