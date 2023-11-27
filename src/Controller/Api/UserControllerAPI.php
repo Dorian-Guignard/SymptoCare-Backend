@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Entity\User;
 use App\Form\UserType;
@@ -16,20 +16,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+
 
 /**
  * @Route("/api/user")
  */
 class UserControllerAPI extends AbstractController
 {
-
-    private $tokenStorage;
-
-    public function __construct(TokenStorageInterface $tokenStorage)
-    {
-        $this->tokenStorage = $tokenStorage;
-    }
 
 
     /**
@@ -91,10 +84,10 @@ class UserControllerAPI extends AbstractController
             // Créer l'entité Patient et la lier à l'entité User
             $patient = new Patient();
             $patient->setUser($user);
-            $patient->setName($user->getEmail()); // Utilisez le nom de l'utilisateur comme exemple, ajustez selon vos besoins
-            $patient->setFirstname('blabla'); // Ajoutez d'autres propriétés si nécessaire
+            $patient->setName($user->getEmail());
+            $patient->setFirstname('blabla'); 
             
-            // Définissez d'autres propriétés si nécessaire
+            
 
             // Persister et flusher l'entité Patient
             $entityManager->persist($patient);

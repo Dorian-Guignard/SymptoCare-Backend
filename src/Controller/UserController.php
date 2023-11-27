@@ -24,14 +24,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class UserController extends AbstractController
 {
 
-    private $tokenStorage;
-
-    public function __construct(TokenStorageInterface $tokenStorage)
-    {
-        $this->tokenStorage = $tokenStorage;
-    }
-
-
     /**
      * @Route("/", name="app_user_index", methods={"GET"})
      */
@@ -91,10 +83,9 @@ class UserController extends AbstractController
             // Créer l'entité Patient et la lier à l'entité User
             $patient = new Patient();
             $patient->setUser($user);
-            $patient->setName($user->getEmail()); 
-            $patient->setFirstname('blabla');
+            $patient->setName('blabla');
+            $patient->setFirstName('blabla');
             $patient->setDateBirth('blabla');
-            
             
 
             // Persister et flusher l'entité Patient

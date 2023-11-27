@@ -17,6 +17,21 @@
                 {{ form_label(form.password) }}
                 {{ form_widget(form.password) }}
             </div>
+
+            <div class="col-12">
+                {{ form_label(form.patient.name) }}
+                {{ form_widget(form.patient.name) }}
+            </div>
+
+            <div class="col-12">
+                {{ form_label(form.patient.firstname) }}
+                {{ form_widget(form.patient.firstname) }}
+            </div>
+
+            <div class="col-12">
+                {{ form_label(form.patient.date_birth) }}
+                {{ form_widget(form.patient.date_birth) }}
+            </div>
         </div>
         <button class="btn btn-success">{{ button_label|default('Save') }}</button>
     {{ form_end(form) }}
