@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\Patient;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use App\Entity\Patient;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -16,7 +17,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      * @Groups("patients_get_collection")
      */
@@ -41,8 +42,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="patient_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $patient;
+
 
     public function getId(): ?int
     {
@@ -141,6 +145,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPatient(?Patient $patient): self
     {
         $this->patient = $patient;
+
+        // Assurez-vous que la relation est bidirectionnelle
+        if ($patient !== null && $patient->getUser() !== $this) {
+            $patient->setUser($this);
+        }
 
         return $this;
     }

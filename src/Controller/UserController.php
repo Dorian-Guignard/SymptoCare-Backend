@@ -74,22 +74,23 @@ class UserController extends AbstractController
                 $user->getPassword()
             );
 
-            $user->setPassword($hashedPassword);
+            // Récupérer les données du formulaire
+            $formData = $form->getData();
+
+            // Récupérer l'entité Patient depuis l'entité User
+            $patient = $user->getPatient();
+
+            // Vérifier que l'entité Patient existe
+            if ($patient) {
+                // Attribuer les valeurs du formulaire à l'entité Patient
+                $patient->setName($formData->getPatient()->getName())
+                ->setFirstName($formData->getPatient()->getFirstName())
+                ->setDateBirth($formData->getPatient()->getDateBirth());
+            }
+                $user->setPassword($hashedPassword);
 
             // Persister et flusher l'entité User
             $entityManager->persist($user);
-            $entityManager->flush();
-
-            // Créer l'entité Patient et la lier à l'entité User
-            $patient = new Patient();
-            $patient->setUser($user);
-            $patient->setName('blabla');
-            $patient->setFirstName('blabla');
-            $patient->setDateBirth('blabla');
-            
-
-            // Persister et flusher l'entité Patient
-            $entityManager->persist($patient);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_user_index');
