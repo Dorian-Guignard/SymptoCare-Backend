@@ -42,6 +42,7 @@ class Symptom
     /**
      * @ORM\ManyToMany(targetEntity=Patient::class, mappedBy="symptom")
      * @ORM\JoinColumn(name="patient_id", referencedColumnName="id")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $patients;
 

@@ -40,6 +40,7 @@ class ConstantType
 
     /**
      * @ORM\OneToMany(targetEntity=Constant::class, mappedBy="constantType")
+     * 
      */
     private $constants;
 

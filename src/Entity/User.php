@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Entity\Patient;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
-
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -19,13 +18,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Groups("patients_get_collection")
+     * @Groups("user_get_collection", "patients_get_collection")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups("patients_get_collection")
+     * @Groups("user_get_collection", "patients_get_collection")
      */
     private $email;
 
@@ -43,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="patient_id", referencedColumnName="id", onDelete="CASCADE")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups("user_get_collection", "user_set_collection")
      */
     private $patient;
 

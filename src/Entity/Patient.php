@@ -7,16 +7,10 @@ use App\Repository\PatientRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\Ignore;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass=PatientRepository::class)
- * @UniqueEntity(fields={"email"}, message="Il existe déja un compte avec cet email")
- * 
  */
 class Patient
 {
@@ -24,94 +18,93 @@ class Patient
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $date_birth;
 
     /**
      * @ORM\OneToMany(targetEntity=Constant::class, mappedBy="patient")
-     * @Groups("patients_get_collection")
+     * 
+     * 
      */
     private $constants;
 
     /**
      * @ORM\ManyToMany(targetEntity=Symptom::class, inversedBy="patients")
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $symptom;
 
     /**
      * @ORM\ManyToOne(targetEntity=Pathology::class, inversedBy="patients")
-     * 
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $pathology;
 
     /**
      * @ORM\ManyToMany(targetEntity=Treatment::class, mappedBy="patients")
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $treatments;
 
     /**
      * @ORM\OneToMany(targetEntity=Antecedent::class, mappedBy="patient")
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $antecedent;
 
     /**
      * @ORM\ManyToMany(targetEntity=Doctor::class, inversedBy="patients")
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $doctor;
 
     /**
      * @ORM\ManyToMany(targetEntity=Clinic::class, inversedBy="patients")
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $clinic;
 
     /**
      * @ORM\OneToMany(targetEntity=PatientPathology::class, mappedBy="patient")
-     * @Groups("patients_get_collection")
+     * @Groups("patients_get_collection", "user_get_collection")
      */
     private $patientPathologies;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=User::class, mappedBy="patient", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $user;
 
 
     public function __construct()
     {
-        $this->constants = new ArrayCollection();
+       
         $this->symptom = new ArrayCollection();
         $this->treatments = new ArrayCollection();
         $this->antecedent = new ArrayCollection();
         $this->doctor = new ArrayCollection();
         $this->clinic = new ArrayCollection();
         $this->patientPathologies = new ArrayCollection();
-
     }
 
     public function getId(): ?int

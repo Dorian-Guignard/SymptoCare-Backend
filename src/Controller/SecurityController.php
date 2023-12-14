@@ -13,30 +13,8 @@ use App\Service\TokenGenerator;
 class SecurityController extends AbstractController
 {
 
-
     /**
-     * @Route("/api/login", name="api_login")
-     */
-     public function index(CurrentUser $curentUser, User $user, TokenGenerator $tokenGenerator): Response
-      {
-         if (null === $user) {
-             return $this->json([
-                 'message' => 'missing credentials',
-             ], Response::HTTP_UNAUTHORIZED);
-         }
-
-        $token =
-        $tokenGenerator->generateToken($user); 
-
-          return $this->json([
-
-             'user'  => $user->getUserIdentifier(),
-             'token' => $token,
-          ]);
-      }
-
-
-    /**
+     * Route backend permettant la connexion d'un utilisateur
      * @Route("/login", name="app_login")
      */
     public function login(AuthenticationUtils $authenticationUtils): Response

@@ -5,11 +5,14 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Repository\PatientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -41,7 +44,7 @@ class UserController extends AbstractController
 
             return $this->json(['message' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
         }
-
+        
         return $this->json(
 
             ['user' => $user],
@@ -102,7 +105,7 @@ class UserController extends AbstractController
 
 
     /**
-     * @Route("/{id}/edit", name="app_user_edit", methods={"GET", "POST"})
+     * @Route(" /{id}/edit", name="app_user_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, UserPasswordHasherInterface $passwordHasher, User $user, UserRepository $userRepository): Response
     {
@@ -144,34 +147,4 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    /**
-     *@Route("/api/usersconnect", name="app_api__usersconnect_item", methods={"GET"}) 
-     */
-    public function getCurrentUser(JWTTokenManagerInterface $jwtManager, Security $security)
-    {
-        $token = $security->getToken();
-        $user = $security->getUser();
-
-        if ($user) {
-        $token = $jwtManager->create($user);
-        }
-
-        if (!$token) {
-            return $this->json(['message' => 'token non trouvé.'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $user = $security->getUser();
-
-        if (!$user instanceof User) {
-            return $this->json(['message' => 'user non trouvé.'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return $this->json(
-            ['user' => $user,
-            'token' => $token],
-            Response::HTTP_OK,
-            [],
-            ['groups' => 'patients_get_collection']
-        );
-    }
 }

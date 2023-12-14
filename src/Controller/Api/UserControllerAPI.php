@@ -5,13 +5,14 @@ namespace App\Controller\Api;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Entity\Patient;
-use Doctrine\ORM\EntityManager;
 use App\Repository\UserRepository;
+use App\Repository\PatientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -19,14 +20,15 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 
 /**
- * @Route("/api/user")
+ * @Route("/api")
  */
 class UserControllerAPI extends AbstractController
 {
 
 
     /**
-     * @Route("/", name="api_app_user_index", methods={"GET"})
+     * Liste de tout les user
+     * @Route("/user", name="api_app_user_index", methods={"GET"})
      */
     public function index(UserRepository $userRepository): Response
     {
@@ -36,7 +38,8 @@ class UserControllerAPI extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="api_app_user_show", methods={"GET"})
+     * Rechercher un utilisateur selon son id
+     * @Route("/user/{id}", name="api_app_user_show", methods={"GET"})
      */
     public function show(User $user): Response
     {
@@ -60,7 +63,7 @@ class UserControllerAPI extends AbstractController
     /**
      * Create user
      * 
-     * @Route("/create", name="api_app_user_new", methods={"POST"})
+     * @Route("/user/create", name="api_app_user_new", methods={"POST"})
      */
     public function new(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, Request $request, UserRepository $userRepository): Response
     {
@@ -104,7 +107,8 @@ class UserControllerAPI extends AbstractController
 
 
     /**
-     * @Route("/{id}/edit", name="api_app_user_edit", methods={"GET", "POST"})
+     * Modifier un utilisateur selon son id 
+     * @Route("/user/{id}/edit", name="api_app_user_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, UserPasswordHasherInterface $passwordHasher, User $user, UserRepository $userRepository): Response
     {
@@ -130,7 +134,8 @@ class UserControllerAPI extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="api_app_user_delete", methods={"POST"})
+     * Supprimer un utilisateur selon son id
+     * @Route("user/{id}", name="api_app_user_delete", methods={"POST"})
      */
     public function delete(UserPasswordHasherInterface $passwordHasher, Request $request, User $user, UserRepository $userRepository): Response
     {
@@ -145,10 +150,14 @@ class UserControllerAPI extends AbstractController
     }
 
     /**
-     *@Route("/api/usersconnect", name="app_api__usersconnect_item", methods={"GET"}) 
+     * @Route("/usersconnect", name="api_usersconnect_item", methods={"POST", "GET"}) 
      */
-    public function getCurrentUser(JWTTokenManagerInterface $jwtManager, Security $security)
-    {
+    public function getCurrentUser(
+        PatientRepository $patientRepository,
+        JWTTokenManagerInterface $jwtManager,
+        Security $security 
+    ): JsonResponse
+     {
         $token = $security->getToken();
         $user = $security->getUser();
 
@@ -166,14 +175,27 @@ class UserControllerAPI extends AbstractController
             return $this->json(['message' => 'user non trouvé.'], Response::HTTP_UNAUTHORIZED);
         }
 
+        $userId = $user->getId();
+        $repoPatientData = $patientRepository->findOneBy(['id' => $userId]);
+
+        $symptoms = $repoPatientData->getSymptom()->toArray();
+        $treatments = $repoPatientData->getTreatments()->toArray();
+
+        $patientData = [
+                'symptoms' => $symptoms,
+                'treatments' => $treatments,
+            ];
+
         return $this->json(
             [
                 'user' => $user,
+                'patientData' => $patientData,
                 'token' => $token
             ],
             Response::HTTP_OK,
             [],
-            ['groups' => 'patients_get_collection']
+            ["user_get_collection", "patients_get_collection"]
         );
     }
+
 }

@@ -1,5 +1,14 @@
 # Fichier config/routes.yaml
+app__usersconnect_item:
+    path: /usersconnect
+    controller: 'App\Controller\UserController::getCurrentUser'
+    methods: ['POST', 'GET']
 
+# La route générique /crud/{id}
+app_user_show:
+    path: /crud/{id}
+    controller: 'App\Controller\UserController::show'
+    methods: ['GET']
 # pour le logout
 # @see https://symfony.com/doc/5.4/security.html#logging-out
 app_logout:
@@ -10,4 +19,4 @@ app_logout:
 # @see https://github.com/lexik/LexikJWTAuthenticationBundle/blob/2.x/Resources/doc/index.rst#configure-application-routing
 api_login_check:
     path: /api/login_check
-
+    

@@ -40,12 +40,13 @@ class Constant
 
     /**
      * @ORM\ManyToOne(targetEntity=ConstantType::class, inversedBy="constants")
-     * @Groups("patients_get_collection")
+     * 
      */
     private $constantType;
 
     /**
      * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="constants")
+     * 
      */
     private $patient;
 
