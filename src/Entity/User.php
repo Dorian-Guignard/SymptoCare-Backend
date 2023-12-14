@@ -40,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
-     * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Patient::class, inversedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="patient_id", referencedColumnName="id", onDelete="CASCADE")
      * @Groups("user_get_collection", "user_set_collection")
      */

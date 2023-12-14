@@ -92,6 +92,7 @@ class Patient
     /**
      * @ORM\OneToOne(targetEntity=User::class, mappedBy="patient", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * 
      */
     private $user;
 

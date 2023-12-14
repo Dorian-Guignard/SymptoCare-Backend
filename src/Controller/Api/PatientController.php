@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 
+use App\Entity\User;
 use App\Entity\Patient;
 use App\Repository\PatientRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -114,7 +115,45 @@ class PatientController extends AbstractController
             ['groups' => 'patients_get_collection']
         );
     }
-    
+    /**
+     * Get patient data for the current user
+     *
+     * @Route("/currentuserbypatient", name="current_user_data", methods={"GET"})
+     */
+    public function getCurrentUserPatientData(): JsonResponse
+    {
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(['message' => 'Utilisateur non trouvé.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        // Récupérer le patient associé à l'utilisateur
+        $patient = $user->getPatient();
+
+        if (!$patient instanceof Patient) {
+            return $this->json(['message' => 'Patient non trouvé pour cet utilisateur.'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Récupérer les données associées au patient
+        $patientData = [
+            'constants' => $patient->getConstants(),
+            'symptoms' => $patient->getSymptom(),
+            'treatments' => $patient->getTreatments(),
+            // Ajoutez d'autres données si nécessaire
+        ];
+
+        return $this->json(
+            [
+                'user' => $user,
+                'patient' => $patientData,
+            ],
+            Response::HTTP_OK,
+            [],
+            ['groups' => 'user_get_collection', 'patients_get_collection']
+        );
+    }
         
 
 }
