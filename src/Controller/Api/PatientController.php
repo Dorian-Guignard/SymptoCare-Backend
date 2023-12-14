@@ -120,7 +120,7 @@ class PatientController extends AbstractController
      *
      * @Route("/currentuserbypatient", name="current_user_data", methods={"GET"})
      */
-    public function getCurrentUserPatientData(): JsonResponse
+    public function getCurrentUserPatientData(EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
@@ -129,16 +129,22 @@ class PatientController extends AbstractController
             return $this->json(['message' => 'Utilisateur non trouvé.'], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Récupérer le patient associé à l'utilisateur
-        $patient = $user->getPatient();
+        // Récupérer l'id de l'entité Patient à partir de la classe User
+        $patientId = $user->getPatient()->getId();
+
+        // Récupérer l'entité Patient à partir de son ID
+        $patientRepository = $entityManager->getRepository(Patient::class);
+        $patient = $patientRepository->find($patientId);
 
         if (!$patient instanceof Patient) {
-            return $this->json(['message' => 'Patient non trouvé pour cet utilisateur.'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'Patient non trouvé.'], Response::HTTP_NOT_FOUND);
         }
 
-        // Récupérer les données associées au patient
+        // Récupérer toutes les données associées au patient
         $patientData = [
-            'constants' => $patient->getConstants(),
+            'id' => $patient->getId(),
+            //LE PROBLEME DE CIRCULAR REFERENCE VIENT A PRIORO DE LA CLASS SYMPTOM, 
+            //IL FAUDRA TESTER LES AUTRES CLASSES POUR VOIR SI LE PROBLEMES NE VIENT PAS AUSSI D'AILLEURS
             'symptoms' => $patient->getSymptom(),
             'treatments' => $patient->getTreatments(),
             // Ajoutez d'autres données si nécessaire
@@ -146,12 +152,11 @@ class PatientController extends AbstractController
 
         return $this->json(
             [
-                'user' => $user,
                 'patient' => $patientData,
             ],
             Response::HTTP_OK,
             [],
-            ['groups' => 'user_get_collection', 'patients_get_collection']
+            ['groups' => 'patients_get_collection']
         );
     }
         
